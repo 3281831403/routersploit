@@ -7,6 +7,7 @@ from routersploit.core.exploit.printer import print_status
 from routersploit.core.exploit.printer import print_error
 from routersploit.core.exploit.utils import is_ipv4
 from routersploit.core.exploit.utils import is_ipv6
+from routersploit.core.exploit.utils import format_hostport
 
 
 TCP_SOCKET_TIMEOUT = 8.0
@@ -28,7 +29,7 @@ class TCPCli:
         self.tcp_port = tcp_port
         self.verbosity = verbosity
 
-        self.peer = "{}:{}".format(self.tcp_target, self.tcp_port)
+        self.peer = format_hostport(self.tcp_target, self.tcp_port)
 
         if is_ipv4(self.tcp_target):
             self.tcp_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -40,13 +41,27 @@ class TCPCli:
 
         self.tcp_client.settimeout(TCP_SOCKET_TIMEOUT)
 
+    @staticmethod
+    def _socket_address(address: str, port: int) -> tuple:
+        """ Builds address tuple accepted by socket.connect
+
+        IPv6 addresses carrying a zone identifier (e.g. fe80::1%eth0) cannot be
+        passed to socket.connect as a string, the zone must be given as a separate
+        scope identifier, so it is resolved via getaddrinfo.
+        """
+
+        if is_ipv6(address) and "%" in address:
+            return socket.getaddrinfo(address, port, socket.AF_INET6, socket.SOCK_STREAM)[0][4]
+
+        return (address, port)
+
     def connect(self) -> bool:
         """ Connect to TCP server
 
         :return bool: True if connection was successful, False otherwise
         """
         try:
-            self.tcp_client.connect((self.tcp_target, self.tcp_port))
+            self.tcp_client.connect(self._socket_address(self.tcp_target, self.tcp_port))
             print_status(self.peer, "TCP Connection established", verbose=self.verbosity)
             return True
 

@@ -3,6 +3,7 @@ from pysnmp.hlapi.v3arch.asyncio import *
 
 from routersploit.core.exploit.exploit import Exploit
 from routersploit.core.exploit.exploit import Protocol
+from routersploit.core.exploit.utils import format_hostport
 from routersploit.core.exploit.option import OptBool
 from routersploit.core.exploit.printer import print_success
 from routersploit.core.exploit.printer import print_error
@@ -27,7 +28,7 @@ class SNMPCli:
         self.snmp_port = snmp_port
         self.verbosity = verbosity
 
-        self.peer = "{}:{}".format(self.snmp_target, snmp_port)
+        self.peer = format_hostport(self.snmp_target, snmp_port)
 
     def get(self, community_string: str, oid: str, version: int = 1, retries: int = 0) -> bytes:
         """ Get OID from SNMP server

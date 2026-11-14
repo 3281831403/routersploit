@@ -8,6 +8,7 @@ import io
 
 from routersploit.core.exploit.exploit import Exploit
 from routersploit.core.exploit.exploit import Protocol
+from routersploit.core.exploit.utils import format_hostport
 from routersploit.core.exploit.option import OptBool
 from routersploit.core.exploit.printer import print_success
 from routersploit.core.exploit.printer import print_error
@@ -33,7 +34,7 @@ class SSHCli:
         self.ssh_port = ssh_port
         self.verbosity = verbosity
 
-        self.peer = "{}:{}".format(self.ssh_target, self.ssh_port)
+        self.peer = format_hostport(self.ssh_target, self.ssh_port)
 
         self.ssh_client = paramiko.SSHClient()
         self.ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())

@@ -3,6 +3,7 @@ import io
 
 from routersploit.core.exploit.exploit import Exploit
 from routersploit.core.exploit.exploit import Protocol
+from routersploit.core.exploit.utils import format_hostport
 from routersploit.core.exploit.option import OptBool
 from routersploit.core.exploit.printer import print_error
 from routersploit.core.exploit.printer import print_success
@@ -28,7 +29,7 @@ class FTPCli:
         self.ftp_port = ftp_port
         self.verbosity = verbosity
 
-        self.peer = "{}:{}".format(self.ftp_target, ftp_port)
+        self.peer = format_hostport(self.ftp_target, ftp_port)
 
         if ssl:
             self.ftp_client = ftplib.FTP_TLS()

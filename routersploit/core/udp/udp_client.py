@@ -6,6 +6,7 @@ from routersploit.core.exploit.option import OptBool
 from routersploit.core.exploit.printer import print_error
 from routersploit.core.exploit.utils import is_ipv4
 from routersploit.core.exploit.utils import is_ipv6
+from routersploit.core.exploit.utils import format_hostport
 
 
 UDP_SOCKET_TIMEOUT = 8.0
@@ -27,7 +28,7 @@ class UDPCli:
         self.udp_port = udp_port
         self.verbosity = verbosity
 
-        self.peer = "{}:{}".format(self.udp_target, self.udp_port)
+        self.peer = format_hostport(self.udp_target, self.udp_port)
 
         if is_ipv4(self.udp_target):
             self.udp_client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -39,6 +40,20 @@ class UDPCli:
 
         self.udp_client.settimeout(UDP_SOCKET_TIMEOUT)
 
+    @staticmethod
+    def _socket_address(address: str, port: int) -> tuple:
+        """ Builds address tuple accepted by socket.sendto
+
+        IPv6 addresses carrying a zone identifier (e.g. fe80::1%eth0) cannot be
+        passed to socket.sendto as a string, the zone must be given as a separate
+        scope identifier, so it is resolved via getaddrinfo.
+        """
+
+        if is_ipv6(address) and "%" in address:
+            return socket.getaddrinfo(address, port, socket.AF_INET6, socket.SOCK_DGRAM)[0][4]
+
+        return (address, port)
+
     def send(self, data: bytes) -> bool:
         """ Send UDP data
 
@@ -47,7 +62,7 @@ class UDPCli:
         """
 
         try:
-            self.udp_client.sendto(data, (self.udp_target, self.udp_port))
+            self.udp_client.sendto(data, self._socket_address(self.udp_target, self.udp_port))
             return True
         except Exception as err:
             print_error(self.peer, "Error while sending data", err, verbose=self.verbosity)

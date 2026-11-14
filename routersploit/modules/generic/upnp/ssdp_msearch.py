@@ -2,6 +2,7 @@ import re
 
 from routersploit.core.exploit import *
 from routersploit.core.udp.udp_client import UDPClient
+from routersploit.core.exploit.utils import format_hostport
 
 
 class Exploit(UDPClient):
@@ -23,7 +24,7 @@ class Exploit(UDPClient):
     def run(self):
         request = (
             "M-SEARCH * HTTP/1.1\r\n" +
-            "HOST: {}:{}\r\n".format(self.target, self.port) +
+            "HOST: {}\r\n".format(format_hostport(self.target, self.port)) +
             "MAN: \"ssdp:discover\"\r\n" +
             "MX: 2\r\n" +
             "ST: upnp:rootdevice\r\n\r\n"
@@ -51,7 +52,7 @@ class Exploit(UDPClient):
                 else:
                     info[key] = ""
 
-            print_status("{}:{} | {} | {} | {}".format(self.target, self.port, info["server"], info["location"], info["usn"]))
+            print_status("{} | {} | {} | {}".format(format_hostport(self.target, self.port), info["server"], info["location"], info["usn"]))
         else:
             print_error("Target did not respond to M-SEARCH request")
 

@@ -5,6 +5,7 @@ except ImportError:
 
 from routersploit.core.exploit.exploit import Exploit
 from routersploit.core.exploit.exploit import Protocol
+from routersploit.core.exploit.utils import format_hostport
 from routersploit.core.exploit.option import OptBool
 from routersploit.core.exploit.printer import print_success
 from routersploit.core.exploit.printer import print_error
@@ -29,7 +30,7 @@ class TelnetCli:
         self.telnet_port = telnet_port
         self.verbosity = verbosity
 
-        self.peer = "{}:{}".format(self.telnet_target, self.telnet_port)
+        self.peer = format_hostport(self.telnet_target, self.telnet_port)
 
         self.telnet_client = None
 

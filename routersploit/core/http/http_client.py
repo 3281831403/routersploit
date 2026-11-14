@@ -6,6 +6,7 @@ from routersploit.core.exploit.exploit import Exploit
 from routersploit.core.exploit.exploit import Protocol
 from routersploit.core.exploit.option import OptBool
 from routersploit.core.exploit.printer import print_error
+from routersploit.core.exploit.utils import format_hostport
 
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -37,7 +38,7 @@ class HTTPClient(Exploit):
         else:
             url = "http://"
 
-        url += "{}:{}{}".format(self.target, self.port, path)
+        url += "{}{}".format(format_hostport(self.target, self.port), path)
 
         kwargs.setdefault("timeout", HTTP_TIMEOUT)
         kwargs.setdefault("verify", False)
@@ -70,7 +71,7 @@ class HTTPClient(Exploit):
         else:
             url = "http://"
 
-        url += "{}:{}{}".format(self.target, self.port, path)
+        url += "{}{}".format(format_hostport(self.target, self.port), path)
 
         return url
 

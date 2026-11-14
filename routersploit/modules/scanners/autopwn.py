@@ -1,6 +1,7 @@
 import os
 
 from routersploit.core.exploit import *
+from routersploit.core.exploit.utils import format_hostport
 from routersploit.core.exploit.exploit import Protocol
 
 
@@ -97,7 +98,7 @@ class Exploit(Exploit):
         if self.not_verified:
             print_info("\033[94m[*]\033[0m", "{} Could not verify exploitability:".format(self.target))
             for v in self.not_verified:
-                print_info(" - {}:{} {} {}".format(*v))
+                print_info(" - {} {} {}".format(format_hostport(v[0], v[1]), *v[2:]))
             print_info()
 
         if self.vulnerabilities:
@@ -172,15 +173,15 @@ class Exploit(Exploit):
                 response = exploit.check()
 
                 if response is True:
-                    print_info("\033[92m[+]\033[0m", "{}:{} {} {} is vulnerable".format(
-                               exploit.target, exploit.port, exploit.target_protocol, exploit))
+                    print_info("\033[92m[+]\033[0m", "{} {} {} is vulnerable".format(
+                               format_hostport(exploit.target, exploit.port), exploit.target_protocol, exploit))
                     self.vulnerabilities.append((exploit.target, exploit.port, exploit.target_protocol, str(exploit)))
                 elif response is False:
-                    print_info("\033[91m[-]\033[0m", "{}:{} {} {} is not vulnerable".format(
-                               exploit.target, exploit.port, exploit.target_protocol, exploit))
+                    print_info("\033[91m[-]\033[0m", "{} {} {} is not vulnerable".format(
+                               format_hostport(exploit.target, exploit.port), exploit.target_protocol, exploit))
                 else:
-                    print_info("\033[94m[*]\033[0m", "{}:{} {} {} Could not be verified".format(
-                               exploit.target, exploit.port, exploit.target_protocol, exploit))
+                    print_info("\033[94m[*]\033[0m", "{} {} {} Could not be verified".format(
+                               format_hostport(exploit.target, exploit.port), exploit.target_protocol, exploit))
                     self.not_verified.append((exploit.target, exploit.port, exploit.target_protocol, str(exploit)))
 
     def creds_target_function(self, running, data):
@@ -231,11 +232,11 @@ class Exploit(Exploit):
 
                 response = exploit.check_default()
                 if response:
-                    print_info("\033[92m[+]\033[0m", "{}:{} {} {} is vulnerable".format(
-                               exploit.target, exploit.port, exploit.target_protocol, exploit))
+                    print_info("\033[92m[+]\033[0m", "{} {} {} is vulnerable".format(
+                               format_hostport(exploit.target, exploit.port), exploit.target_protocol, exploit))
 
                     for creds in response:
                         self.creds.append(creds)
                 else:
-                    print_info("\033[91m[-]\033[0m", "{}:{} {} {} is not vulnerable".format(
-                               exploit.target, exploit.port, exploit.target_protocol, exploit))
+                    print_info("\033[91m[-]\033[0m", "{} {} {} is not vulnerable".format(
+                               format_hostport(exploit.target, exploit.port), exploit.target_protocol, exploit))
